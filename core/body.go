@@ -15,6 +15,8 @@ import (
 	"github.com/ggicci/httpin/internal"
 )
 
+var ErrUnknownBodyType = errors.New("unknown body type")
+
 // DirectiveBody is the implementation of the "body" directive.
 type DirectiveBody struct{}
 
@@ -22,7 +24,7 @@ func (db *DirectiveBody) Decode(rtm *DirectiveRuntime) error {
 	req := rtm.GetRequest()
 	bodyFormat, bodySerializer := db.getSerializer(rtm)
 	if bodySerializer == nil {
-		return fmt.Errorf("unknown body format: %q", bodyFormat)
+		return fmt.Errorf("%w: %q", ErrUnknownBodyType, bodyFormat)
 	}
 	if err := bodySerializer.Decode(req.Body, rtm.Value.Elem().Addr().Interface()); err != nil {
 		return err
@@ -33,7 +35,7 @@ func (db *DirectiveBody) Decode(rtm *DirectiveRuntime) error {
 func (db *DirectiveBody) Encode(rtm *DirectiveRuntime) error {
 	bodyFormat, bodySerializer := db.getSerializer(rtm)
 	if bodySerializer == nil {
-		return fmt.Errorf("unknown body format: %q", bodyFormat)
+		return fmt.Errorf("%w: %q", ErrUnknownBodyType, bodyFormat)
 	}
 	if bodyReader, err := bodySerializer.Encode(rtm.Value.Interface()); err != nil {
 		return err

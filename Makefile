@@ -6,7 +6,10 @@ GOTEST=$(GO) test
 GOCOVER=$(GO) tool cover
 
 .PHONY: test
-test: test/httpin test/echo test/report
+test: test/cover test/report
+
+.PHONY: test/cover
+test/cover: test/httpin test/echo
 
 .PHONY: test/httpin
 test/httpin:
